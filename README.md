@@ -102,5 +102,3 @@ Before submitting your lab, make sure you have:
 - [ ] Your server starts without errors using `node server.js`.  
 
 ---
-
-**End of README**
