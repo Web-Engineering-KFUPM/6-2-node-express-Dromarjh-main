@@ -1,0 +1,36 @@
+name: Lab Auto-Grader
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch: {}
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run grader
+        run: |
+          node "6-2-node-express-Dromarjh-main/6-2-node-express/script/grade.cjs"
+
+      - name: Upload grading artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: grading-report
+          path: |
+            dist/grading/grade.json
+            dist/grading/grade.md
+          if-no-files-found: warn
