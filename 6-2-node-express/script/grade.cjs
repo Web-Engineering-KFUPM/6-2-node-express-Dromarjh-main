@@ -224,12 +224,32 @@ const t5_correctness = qualitative(t5_checks.quoteRoute && t5_checks.resJson, 4)
 const t5_quality = qualitative(t5_checks.rootRoute && t5_checks.quoteRoute, 4);
 const t5_total = t5_completeness + t5_correctness + t5_quality;
 
-// --------- Sum lab points (80) with flexible floor rule ----------
+// --------- Sum lab points (80) ----------
 let labPoints = t1_total + t2_total + t3_total + t4_total + t5_total;
 
-// If some tasks implemented but total < 60, raise to 60 (as per your instruction).
-const anyWorkDone = labPoints > 0;
-if (anyWorkDone && labPoints < 60) {
+// --------- Attempt detection (only floor if there was a real attempt) ----------
+// Strong signals that student actually implemented something (not just file presence)
+const attemptFlags = [
+  // TODO 1: express app setup signals
+  t1_checks.listen || t1_checks.appCreated || t1_checks.importedExpress,
+
+  // TODO 2: random util — must export getRandomInt and actually use randomness/floor
+  (t2_checks.exported && (t2_checks.usesRandom || t2_checks.usesFloor)),
+
+  // TODO 3: quote helper — must export getRandomQuote and use random index/quotes array
+  (t3_checks.exported && (t3_checks.randomIndex || t3_checks.usesQuotesArray)),
+
+  // TODO 4: cors actually used
+  t4_checks.used,
+
+  // TODO 5: any route actually defined
+  t5_checks.rootRoute || t5_checks.quoteRoute
+];
+const attempted = attemptFlags.some(Boolean);
+
+// --------- Floor rule (apply only if attempted) ----------
+// If the student attempted at least one task and earned >0 but <60 for lab, floor to 60.
+if (attempted && labPoints > 0 && labPoints < 60) {
   labPoints = 60;
 }
 
